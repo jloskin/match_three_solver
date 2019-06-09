@@ -49,6 +49,78 @@ class Main : Application() {
         primaryStage.show()
     }
 
+    val zz =
+        setOf(
+            // first
+            // -1  1  1
+            //  1 -1 -1
+            arrayOf(
+                arrayOf(-1, 1, 1),
+                arrayOf(1, -1, -1)
+            ),
+            //  1 -1 -1
+            // -1  1  1
+            arrayOf(
+                arrayOf(1, -1, -1),
+                arrayOf(-1, 1, 1)
+            ),
+            // middle
+            // -1  1 -1
+            //  1 -1  1
+            arrayOf(
+                arrayOf(-1, 1, -1),
+                arrayOf(1, -1, 1)
+            ),
+            //  1 -1  1
+            // -1  1 -1
+            arrayOf(
+                arrayOf(1, -1, 1),
+                arrayOf(-1, 1, -1)
+            ),
+            // last
+            //  1  1 -1
+            // -1 -1  1
+            arrayOf(
+                arrayOf(1, 1, -1),
+                arrayOf(-1, -1, 1)
+            ),
+            // -1 -1  1
+            //  1  1 -1
+            arrayOf(
+                arrayOf(-1, -1, 1),
+                arrayOf(1, 1, -1)
+            ),
+            // first
+            //  1 -1
+            // -1  1
+            // -1  1
+            arrayOf(
+                arrayOf(1, -1),
+                arrayOf(-1, 1),
+                arrayOf(-1, 1)
+            ),
+            // -1  1
+            //  1 -1
+            //  1 -1
+            arrayOf(
+                arrayOf(-1, 1),
+                arrayOf(1, -1),
+                arrayOf(1, -1)
+            ),
+
+            // last
+            arrayOf(
+                arrayOf(-1, 1),
+                arrayOf(-1, 1),
+                arrayOf(1, -1)
+            ),
+            arrayOf(
+                arrayOf(1, -1),
+                arrayOf(1, -1),
+                arrayOf(-1, 1)
+            )
+        )
+
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {

@@ -1,10 +1,11 @@
 import javafx.application.Application
-import javafx.geometry.Insets
 import javafx.scene.Scene
 import javafx.scene.input.KeyEvent
-import javafx.scene.layout.*
+import javafx.scene.layout.Border
+import javafx.scene.layout.BorderStroke
+import javafx.scene.layout.BorderStrokeStyle
+import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
-import javafx.stage.Screen.getPrimary
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import org.opencv.core.*
@@ -18,123 +19,50 @@ import javax.imageio.ImageIO
 
 
 class Main : Application() {
-    override fun start(primaryStage: Stage) {
-        val screen = getPrimary()
-        val bounds = screen.visualBounds
-
-        primaryStage.x = bounds.minX
-        primaryStage.y = bounds.minY
-        primaryStage.width = bounds.width
-        primaryStage.height = bounds.height
-        primaryStage.isMaximized = true
-        primaryStage.initStyle(StageStyle.TRANSPARENT)
-        primaryStage.isAlwaysOnTop = true
-        primaryStage.scene = Scene(
-            StackPane().apply {
-                children.add(
-                    Pane().apply {
-                        setMaxSize(50.0, 50.0)
-                        background = Background(BackgroundFill(Color.web("#00ff00"), CornerRadii.EMPTY, Insets.EMPTY))
-                    }
-                )
-                layoutX = 0.0
-                layoutY = 0.0
+    override fun start(
+        primaryStage: Stage
+    ) {
+        primaryStage.apply {
+            isAlwaysOnTop = true
+            scene = Scene(
+                VBox().apply {
+                    border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, null, null))
+                    style = "-fx-background-color: rgba(0,0,0,0);"
+                }
+            ).apply {
+                initStyle(StageStyle.TRANSPARENT)
+                fill = null
+                addEventFilter(KeyEvent.KEY_RELEASED, {
+                    println("click")
+                })
             }
-        ).apply {
-            fill = Color.TRANSPARENT
-            addEventFilter(KeyEvent.KEY_RELEASED, {
-                println("click")
-            })
-        }
-        primaryStage.show()
+            width = 200.0
+            height = 100.0
+        }.show()
     }
-
-    val zz =
-        setOf(
-            // first
-            // -1  1  1
-            //  1 -1 -1
-            arrayOf(
-                arrayOf(-1, 1, 1),
-                arrayOf(1, -1, -1)
-            ),
-            //  1 -1 -1
-            // -1  1  1
-            arrayOf(
-                arrayOf(1, -1, -1),
-                arrayOf(-1, 1, 1)
-            ),
-            // middle
-            // -1  1 -1
-            //  1 -1  1
-            arrayOf(
-                arrayOf(-1, 1, -1),
-                arrayOf(1, -1, 1)
-            ),
-            //  1 -1  1
-            // -1  1 -1
-            arrayOf(
-                arrayOf(1, -1, 1),
-                arrayOf(-1, 1, -1)
-            ),
-            // last
-            //  1  1 -1
-            // -1 -1  1
-            arrayOf(
-                arrayOf(1, 1, -1),
-                arrayOf(-1, -1, 1)
-            ),
-            // -1 -1  1
-            //  1  1 -1
-            arrayOf(
-                arrayOf(-1, -1, 1),
-                arrayOf(1, 1, -1)
-            ),
-            // first
-            //  1 -1
-            // -1  1
-            // -1  1
-            arrayOf(
-                arrayOf(1, -1),
-                arrayOf(-1, 1),
-                arrayOf(-1, 1)
-            ),
-            // -1  1
-            //  1 -1
-            //  1 -1
-            arrayOf(
-                arrayOf(-1, 1),
-                arrayOf(1, -1),
-                arrayOf(1, -1)
-            ),
-
-            // last
-            arrayOf(
-                arrayOf(-1, 1),
-                arrayOf(-1, 1),
-                arrayOf(1, -1)
-            ),
-            arrayOf(
-                arrayOf(1, -1),
-                arrayOf(1, -1),
-                arrayOf(-1, 1)
-            )
-        )
 
     companion object {
         @JvmStatic
-        fun main(args: Array<String>) {
-//            makeShot()
+        fun main(
+            args: Array<String>
+        ) {
+/*
             val path = "input/"
 
             val input = "${path}aa.png"
             val output = "output.png"
             val runes: Map<String, Int> = mapOf(
-                "${path}air.png" to 1,
-                "${path}water.png" to 2,
-                "${path}void.png" to 3,
-                "${path}earth.png" to 4,
-                "${path}fire.png" to 5
+                "${path}simple/air.png" to 1,
+                "${path}broken/air.png" to 1,
+                "${path}simple/water.png" to 2,
+                "${path}broken/water.png" to 2,
+                "${path}simple/void.png" to 3,
+                "${path}broken/void.png" to 3,
+                "${path}simple/earth.png" to 4,
+                "${path}broken/earth.png" to 4,
+                "${path}broken/earth_2.png" to 4,
+                "${path}simple/fire.png" to 5,
+                "${path}broken/fire.png" to 5
             )
 
             val array = transformToArray(
@@ -149,9 +77,101 @@ class Main : Application() {
                 ),
                 runes
             )
-            array.map { it.map(Int::toString).map { it.padStart(3) }.joinToString(",") }.forEach(::println)
-            //launch(Main::class.java)
-            System.exit(0)
+
+            solve(array)*/
+            launch(Main::class.java)
+//            System.exit(0)
+        }
+
+        private fun solve(
+            array: Array<Array<Int>>
+        ) = time("solve") {
+            (0 until array.size).forEach { x ->
+                (0 until array[x].size).forEach { y ->
+                    simpleSolver(array, Coordinate(x, y))
+                }
+            }
+        }
+
+        data class Coordinate(
+            val x: Int,
+            val y: Int
+        )
+
+        data class Combination(
+            val width: Int,
+            val height: Int
+        )
+
+        private fun simpleSolver(
+            array: Array<Array<Int>>,
+            position: Coordinate
+        ) {
+            val item = array[position.x][position.y]
+            if (item < 0) return
+
+            val bottom = checkCombination(array, position, position.copy(y = position.y + 1))
+            val top = checkCombination(array, position, position.copy(y = position.y - 1))
+            val right = checkCombination(array, position, position.copy(x = position.x + 1))
+            val left = checkCombination(array, position, position.copy(x = position.x - 1))
+        }
+
+        private fun checkCombination(
+            array: Array<Array<Int>>,
+            position: Coordinate,
+            newPosition: Coordinate
+        ): Boolean {
+            if (newPosition.x < 0 || newPosition.x >= array.size) return false
+            if (newPosition.y < 0 || newPosition.y >= array[newPosition.x].size) return false
+
+            val combination = checkCombination(
+                copyAndRotate(array, position, newPosition),
+                newPosition
+            )
+
+            if ((combination.width >= 4 || combination.height >= 4)) {
+                println(position)
+                println(combination)
+            }
+
+            return true
+        }
+
+        private fun copyAndRotate(
+            array: Array<Array<Int>>,
+            position: Coordinate,
+            newPosition: Coordinate
+        ): Array<Array<Int>> =
+            array.map(Array<Int>::clone).toTypedArray().apply {
+                val tmp = array[position.x][position.y]
+                this[position.x][position.y] = this[newPosition.x][newPosition.y]
+                this[newPosition.x][newPosition.y] = tmp
+            }
+
+        private fun checkCombination(
+            deepCopy: Array<Array<Int>>,
+            position: Coordinate
+        ): Combination {
+            val centerItem = deepCopy[position.x][position.y]
+
+            val left = (position.x - 1 downTo 0)
+                .find { deepCopy[it][position.y] != centerItem }
+                ?.let { it + 1 }
+                ?: 0
+            val right = (position.x + 1 until deepCopy.size)
+                .find { deepCopy[it][position.y] != centerItem }
+                ?.let { it - 1 }
+                ?: (deepCopy.size - 1)
+            val top = (position.y - 1 downTo 0)
+                .find { deepCopy[position.x][it] != centerItem }
+                ?.let { it + 1 }
+                ?: 0
+            val bottom = (position.y + 1 until deepCopy[position.x].size)
+                .find { deepCopy[position.x][it] != centerItem }
+                ?.let { it - 1 }
+                ?: (deepCopy[position.x].size - 1)
+
+            return Combination(right - left + 1, bottom - top + 1)
         }
 
         private fun transformToArray(
@@ -159,16 +179,19 @@ class Main : Application() {
             templates: Map<String, Int>
         ): Array<Array<Int>> =
             time("transformToArray") {
-                val width = coordinates.groupBy { it.second.y }.size
-                val height = coordinates.groupBy { it.second.x }.size
+                val width = coordinates.groupBy { it.second.x }.size
+                val height = coordinates.groupBy { it.second.y }.size
                 val array = Array(width, { Array(height, { -1 }) })
                 coordinates.forEach {
-                    array[it.second.y.toInt()][it.second.x.toInt()] = templates[it.first] ?: error("")
+                    array[it.second.x.toInt()][it.second.y.toInt()] = templates[it.first] ?: error("")
                 }
                 array
             }
 
-        private fun <T> time(name: String, func: () -> T): T {
+        private fun <T> time(
+            name: String,
+            func: () -> T
+        ): T {
             val start = System.currentTimeMillis()
             val result = func()
             val end = System.currentTimeMillis()
@@ -219,7 +242,10 @@ class Main : Application() {
                 uniquePoints
             }
 
-        private fun removeDuplicate(items: Set<Pair<String, Point>>, tolerance: Int = 10): Set<Pair<String, Point>> =
+        private fun removeDuplicate(
+            items: Set<Pair<String, Point>>,
+            tolerance: Int = 10
+        ): Set<Pair<String, Point>> =
             time("removeDuplicate") {
                 items.forEach { first ->
                     val firX = first.second.x.toInt()
@@ -243,7 +269,11 @@ class Main : Application() {
             }
 
 
-        private fun parseImage(input: String, templates: Set<String>, output: String): Set<Pair<String, Point>> =
+        private fun parseImage(
+            input: String,
+            templates: Set<String>,
+            output: String
+        ): Set<Pair<String, Point>> =
             time("parseImage") {
                 System.loadLibrary(Core.NATIVE_LIBRARY_NAME)
                 run(

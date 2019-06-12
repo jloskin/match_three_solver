@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+      minHeight="-Infinity"
+      minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.201"
+      fx:controller="Window">
+    <children>
+        <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseDragged="#windowDragged"
+              onMousePressed="#initWindowMove" prefHeight="48.0" style="-fx-background-color: red;" VBox.vgrow="NEVER"/>
+        <HBox VBox.vgrow="ALWAYS">
+            <children>
+                <Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="4.0"
+                      style="-fx-background-color: red;"/>
+                <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS"/>
+                <Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="4.0"
+                      style="-fx-background-color: red;"/>
+            </children>
+        </HBox>
+        <HBox>
+            <children>
+                <Pane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="4.0"
+                      style="-fx-background-color: red;" HBox.hgrow="ALWAYS"/>
+                <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                      onMouseDragged="#xyFrameSizer" onMousePressed="#initXySizer" prefHeight="4.0" prefWidth="4.0"
+                      style="-fx-background-color: green;">
+                    <cursor>
+                        <Cursor fx:constant="SE_RESIZE"/>
+                    </cursor>
+                </Pane>
+            </children>
+        </HBox>
+    </children>
+</VBox>

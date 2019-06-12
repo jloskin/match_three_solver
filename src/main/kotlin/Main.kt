@@ -4,6 +4,7 @@ import javafx.scene.Scene
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 
+
 class Main : Application() {
     override fun start(
         primaryStage: Stage

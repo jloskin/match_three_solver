@@ -1,39 +1,72 @@
+import javafx.application.Platform
 import javafx.fxml.FXML
+import javafx.fxml.Initializable
+import javafx.scene.control.TextField
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
 import java.awt.Rectangle
+import java.net.URL
+import java.util.*
 
 
-class Window {
+class Window : Initializable {
     private var startPoint: Pair<Double, Double> = Pair(0.0, 0.0)
     private var startPointSize: Pair<Double, Double> = Pair(0.0, 0.0)
     private var startWindowSize: Pair<Double, Double> = Pair(0.0, 0.0)
 
     @FXML
     private lateinit var screenPane: Pane
+    @FXML
+    private lateinit var columnCount: TextField
+    @FXML
+    private lateinit var rowCount: TextField
 
-    init {
-        initCapture()
+    private lateinit var canvas: ResizableCanvas
+
+    override fun initialize(location: URL, resources: ResourceBundle?) {
+        canvas = ResizableCanvas().apply {
+            widthProperty().bind(screenPane.widthProperty())
+            heightProperty().bind(screenPane.heightProperty())
+        }
+        screenPane.children.add(canvas)
+        columnCount.textProperty().addListener { _, _, newValue -> canvas.column.value = newValue.toIntOrNull() }
+        rowCount.textProperty().addListener { _, _, newValue -> canvas.row.value = newValue.toIntOrNull() }
     }
 
-    private fun initCapture() {
-        Thread({
-            var time = System.currentTimeMillis()
-            while (true) {
-                if (System.currentTimeMillis() - time > 3000) {
-                    time = System.currentTimeMillis()
-                    val bounds = screenPane.boundsInLocal
-                    val screenBounds = screenPane.localToScreen(bounds)
-                    val x = screenBounds.minX
-                    val y = screenBounds.minY
-                    val width = screenBounds.width
-                    val height = screenBounds.height
-                    val input = "./src/main/resources/Shot.png"
-                    Solver.makeShot(input, Rectangle(x.toInt(), y.toInt(), width.toInt(), height.toInt()))
-                    Solver.solver(input)
-                }
+    private var start: Boolean = false
+    private var thread: Thread? = null
+
+    private fun initCapture(templates: Set<Int>) {
+        start = true
+        thread = Thread(thread(templates)).also(Thread::start)
+    }
+
+    private fun thread(templates: Set<Int>): () -> Unit = {
+        var time = 0L
+        while (start) {
+            if (System.currentTimeMillis() - time > 500) {
+                time = System.currentTimeMillis()
+
+                val input = "input.png"
+                Solver.makeShot(
+                    input,
+                    screenPane.localToScreen(screenPane.boundsInLocal).let {
+                        Rectangle(
+                            it.minX.toInt(),
+                            it.minY.toInt(),
+                            it.width.toInt(),
+                            it.height.toInt()
+                        )
+                    }
+                )
+                val step = Solver.solver(input, templates)
+                println(step)
+                if (step.combination.height != -1 && step.combination.width != -1)
+                    Platform.runLater {
+                        canvas.drawBlock(step)
+                    }
             }
-        }).start()
+        }
     }
 
     @FXML
@@ -57,5 +90,32 @@ class Window {
     fun initXySizer(mouseEvent: MouseEvent) {
         startPointSize = Pair(mouseEvent.screenX, mouseEvent.screenY)
         startWindowSize = Pair(Main.PRIMARY_STAGE.width, Main.PRIMARY_STAGE.height)
+    }
+
+    @FXML
+    fun initParser(mouseEvent: MouseEvent) {
+        Platform.runLater {
+            screenPane.styleProperty().value = "-fx-background-color: null;"
+            canvas.clear()
+            Thread({
+                Thread.sleep(2000)
+                val templates = canvas.patterns().mapIndexed { a, b ->
+                    Solver.makeShot("$a.png", b)
+                    a
+                }.toSet()
+
+                initCapture(templates)
+            }).start()
+        }
+    }
+
+    @FXML
+    fun clearAll(mouseEvent: MouseEvent) {
+        start = false
+        thread?.interrupt()
+
+        screenPane.styleProperty().value = "-fx-background-color: rgba(255, 255, 255, 0.6);"
+        canvas.points.clear()
+        canvas.redraw()
     }
 }

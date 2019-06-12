@@ -7,22 +7,9 @@ import java.io.File
 import javax.imageio.ImageIO
 
 object Solver {
-    fun solver(input: String = "./src/main/resources/Shot.png") {
-        val path = "input/"
+    fun solver(input: String, templates: Set<Int>): Step {
         val output = "output.png"
-        val runes: Map<String, Int> = mapOf(
-            "${path}simple/air.png" to 1,
-            "${path}broken/air.png" to 1,
-            "${path}simple/water.png" to 2,
-            "${path}broken/water.png" to 2,
-            "${path}simple/void.png" to 3,
-            "${path}broken/void.png" to 3,
-            "${path}simple/earth.png" to 4,
-            "${path}broken/earth.png" to 4,
-            "${path}broken/earth_2.png" to 4,
-            "${path}simple/fire.png" to 5,
-            "${path}broken/fire.png" to 5
-        )
+        val runes: Map<String, Int> = templates.map { "$it.png" to it }.toMap()
 
         val array = transformToArray(
             normalizeCoordinates(
@@ -37,16 +24,30 @@ object Solver {
             runes
         )
 
-        solve(array)
+        return solve(array)
     }
 
     private fun solve(
         array: Array<Array<Int>>
-    ) = time("solve") {
-        (0 until array.size).forEach { x ->
-            (0 until array[x].size).forEach { y ->
+    ): Step = time("solve") {
+        val flatten = (0 until array.size).map { x ->
+            (0 until array[x].size).map { y ->
                 simpleSolver(array, Coordinate(x, y))
-            }
+            }.flatten()
+        }.flatten()
+        findBest(flatten)
+    }
+
+    private fun findBest(flatten: List<Step>): Step {
+        val comb = flatten.filter { it.combination.height >= 3 || it.combination.width >= 3 }
+        val maximum = comb.maxBy { it.combination.height + it.combination.width }
+        return if (maximum != null && maximum.let { it.combination.width + it.combination.height - 1 } >= 5) {
+            maximum
+        } else {
+            comb.find { it.combination.height == 5 || it.combination.width == 5 }
+                ?: comb.find { it.combination.height == 4 || it.combination.width == 4 }
+                ?: comb.find { it.combination.height == 3 || it.combination.width == 3 }
+                ?: Step(Coordinate(-1, -1), Coordinate(-1, -1))
         }
     }
 
@@ -60,38 +61,48 @@ object Solver {
         val height: Int
     )
 
+    data class Step(
+        val from: Coordinate,
+        val to: Coordinate,
+        val combination: Combination = Combination(-1, -1)
+    )
+
     private fun simpleSolver(
         array: Array<Array<Int>>,
         position: Coordinate
-    ) {
+    ): Set<Step> {
         val item = array[position.x][position.y]
-        if (item < 0) return
+        if (item < 0) return setOf()
 
-        val bottom = checkCombination(array, position, position.copy(y = position.y + 1))
-        val top = checkCombination(array, position, position.copy(y = position.y - 1))
-        val right = checkCombination(array, position, position.copy(x = position.x + 1))
-        val left = checkCombination(array, position, position.copy(x = position.x - 1))
+        val bottom: Step = checkCombination(array, position, position.copy(y = position.y + 1))
+        val top: Step = checkCombination(array, position, position.copy(y = position.y - 1))
+        val right: Step = checkCombination(array, position, position.copy(x = position.x + 1))
+        val left: Step = checkCombination(array, position, position.copy(x = position.x - 1))
+
+        return setOf(
+            bottom,
+            top,
+            right,
+            left
+        )
     }
 
     private fun checkCombination(
         array: Array<Array<Int>>,
         position: Coordinate,
         newPosition: Coordinate
-    ): Boolean {
-        if (newPosition.x < 0 || newPosition.x >= array.size) return false
-        if (newPosition.y < 0 || newPosition.y >= array[newPosition.x].size) return false
+    ): Step {
+        if (newPosition.x < 0 || newPosition.x >= array.size) return Step(position, newPosition)
+        if (newPosition.y < 0 || newPosition.y >= array[newPosition.x].size) return Step(position, newPosition)
 
-        val combination = checkCombination(
-            copyAndRotate(array, position, newPosition),
-            newPosition
+        return Step(
+            position,
+            newPosition,
+            checkCombination(
+                copyAndRotate(array, position, newPosition),
+                newPosition
+            )
         )
-
-        if ((combination.width >= 3 || combination.height >= 3)) {
-            println(position)
-            println(combination)
-        }
-
-        return true
     }
 
     private fun copyAndRotate(
@@ -242,8 +253,7 @@ object Solver {
         }
 
     fun makeShot(input: String, capture: Rectangle) {
-        val image = Robot().createScreenCapture(capture)
-        ImageIO.write(image, "png", File(input))
+        ImageIO.write(Robot().createScreenCapture(capture), "png", File(input))
     }
 
     private fun run(

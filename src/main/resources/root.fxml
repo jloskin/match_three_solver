@@ -1,36 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.layout.*?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
       minHeight="-Infinity"
-      minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.201"
-      fx:controller="Window">
-    <children>
-        <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseDragged="#windowDragged"
-              onMousePressed="#initWindowMove" prefHeight="48.0" style="-fx-background-color: red;" VBox.vgrow="NEVER"/>
-        <HBox VBox.vgrow="ALWAYS">
-            <children>
-                <Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="4.0"
-                      style="-fx-background-color: red;"/>
-                <Pane fx:id="screenPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                      HBox.hgrow="ALWAYS"/>
-                <Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="4.0"
-                      style="-fx-background-color: red;"/>
-            </children>
-        </HBox>
-        <HBox>
-            <children>
-                <Pane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="4.0"
-                      style="-fx-background-color: red;" HBox.hgrow="ALWAYS"/>
-                <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                      onMouseDragged="#xyFrameSizer" onMousePressed="#initXySizer" prefHeight="4.0" prefWidth="4.0"
-                      style="-fx-background-color: green;">
-                    <cursor>
-                        <Cursor fx:constant="SE_RESIZE"/>
-                    </cursor>
-                </Pane>
-            </children>
-        </HBox>
-    </children>
+      minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: null;"
+      xmlns="http://javafx.com/javafx/8.0.201" fx:controller="Window">
+    <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+          minWidth="-Infinity" onMouseDragged="#windowDragged" onMousePressed="#initWindowMove" prefHeight="48.0"
+          spacing="8.0" style="-fx-background-color: red;" VBox.vgrow="NEVER" focusTraversable="true">
+        <padding>
+            <Insets left="12.0"/>
+        </padding>
+        <Label text="Column"/>
+        <TextField fx:id="columnCount" prefWidth="50.0"/>
+        <Label text="Row"/>
+        <TextField fx:id="rowCount" prefWidth="50.0"/>
+        <Button mnemonicParsing="false" text="Init" onMouseClicked="#initParser"/>
+        <Button mnemonicParsing="false" text="Clear" onMouseClicked="#clearAll"/>
+    </HBox>
+    <HBox VBox.vgrow="ALWAYS">
+        <Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="4.0"
+              style="-fx-background-color: red;"/>
+        <Pane fx:id="screenPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+              style="-fx-background-color: rgba(255, 255, 255, 0.6);" HBox.hgrow="ALWAYS"/>
+        <Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="4.0"
+              style="-fx-background-color: red;"/>
+    </HBox>
+    <HBox>
+        <Pane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="4.0"
+              style="-fx-background-color: red;" HBox.hgrow="ALWAYS"/>
+        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+              onMouseDragged="#xyFrameSizer" onMousePressed="#initXySizer" prefHeight="4.0" prefWidth="4.0"
+              style="-fx-background-color: green;">
+            <cursor>
+                <Cursor fx:constant="SE_RESIZE"/>
+            </cursor>
+        </Pane>
+    </HBox>
 </VBox>

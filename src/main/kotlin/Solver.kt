@@ -3,15 +3,12 @@ import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import java.awt.Rectangle
 import java.awt.Robot
-import java.awt.Toolkit
 import java.io.File
 import javax.imageio.ImageIO
 
 object Solver {
-    fun main() {
+    fun solver(input: String = "./src/main/resources/Shot.png") {
         val path = "input/"
-
-        val input = "${path}aa.png"
         val output = "output.png"
         val runes: Map<String, Int> = mapOf(
             "${path}simple/air.png" to 1,
@@ -89,7 +86,7 @@ object Solver {
             newPosition
         )
 
-        if ((combination.width >= 4 || combination.height >= 4)) {
+        if ((combination.width >= 3 || combination.height >= 3)) {
             println(position)
             println(combination)
         }
@@ -244,17 +241,9 @@ object Solver {
             )
         }
 
-    private fun makeShot() {
-        val r = Robot()
-
-        // It saves screenshot to desired path
-        val path = "./src/main/resources/Shot.jpg"
-
-        // Used to get ScreenSize and capture image
-        val capture = Rectangle(Toolkit.getDefaultToolkit().screenSize)
-        val image = r.createScreenCapture(capture)
-        ImageIO.write(image, "jpg", File(path))
-        println("Screenshot saved")
+    fun makeShot(input: String, capture: Rectangle) {
+        val image = Robot().createScreenCapture(capture)
+        ImageIO.write(image, "png", File(input))
     }
 
     private fun run(

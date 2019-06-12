@@ -13,7 +13,8 @@
             <children>
                 <Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="4.0"
                       style="-fx-background-color: red;"/>
-                <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS"/>
+                <Pane fx:id="screenPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                      HBox.hgrow="ALWAYS"/>
                 <Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="4.0"
                       style="-fx-background-color: red;"/>
             </children>
